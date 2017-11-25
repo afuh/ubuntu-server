@@ -1,6 +1,4 @@
-# Ubuntu server first run
-[How To Set Up a Node.js Application for Production on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04
-  )
+# Ubuntu Server Initial Run
 
 ## Table of Contents
 - [Access the server](#access-the-server)
@@ -17,6 +15,7 @@
   - [Install PM2](#install-pm2)
   - [PM2 Commands](#pm2-commands)
 - [Useful commands](#useful-commands)
+- [Useful links](#useful-links)
 
 
 I will use `$` and `▶` to indicate the local or server terminal:
@@ -255,3 +254,7 @@ The `startup` subcommand generates and configures a startup script to launch PM2
 - `▶ sudo tail -f /var/log/nginx/error.log` view Nginx error logs
 - `▶ ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'` check ip
 - `▶ curl -4 icanhazip.com` check ip
+
+## Useful links
+- [How To Set Up a Node.js Application for Production on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04)
+- [How To Set Up Automatic Deployment with Git with a VPS](https://www.digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps)
