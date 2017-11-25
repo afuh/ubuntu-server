@@ -12,11 +12,11 @@
   - [Basic management commands](#basic-management-commands)
   - [Important Nginx Files and Directories](#important-nginx-files-and-directories)
   - [Add locations](#add-locations)
-- [Install Node.js](#install-node.js)
-  - [Node.js v9.x with NodeSource](#node.js-v9.x-with-nodeSource)
-  - [Install PM2](#Install-PM2)
-  - [PM2 Commands](#PM2-Commands)
-- [Useful commands](#Useful-commands)
+- [Install Node.js](#instal-nodejs)
+  - [Node.js v9.x with NodeSource](#nodejs-v9x-with-nodesource)
+  - [Install PM2](#install-pm2)
+  - [PM2 Commands](#pm2-Commands)
+- [Useful commands](#useful-commands)
 
 
 I will use to indicate the local or server terminal:
