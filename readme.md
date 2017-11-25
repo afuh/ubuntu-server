@@ -14,6 +14,7 @@
   - [Node.js v9.x with NodeSource](#nodejs-v9x-with-nodesource)
   - [Install PM2](#install-pm2)
   - [PM2 Commands](#pm2-commands)
+- [Automatic Deployment with Git](#automatic-deployment-with-git)
 - [Useful commands](#useful-commands)
 - [Useful links](#useful-links)
 
@@ -246,7 +247,32 @@ The `startup` subcommand generates and configures a startup script to launch PM2
 - `▶ pm2 show [app-name]`
 - `▶ pm2 logs`
 
+## Automatic Deployment with Git
 
+```bash
+▶ cd /var
+▶ sudo mkdir repo && sudo mkdir repo/<site-name>.git
+▶ sudo chown -R <owner>:<group> repo
+▶ cd repo/<site-name>.git && git init --bare
+```
+`--bare` means that our folder will have no source files, just the version control.
+
+in `/var/repo/<site-name>.git/hooks/` create the file 'post-receive' and type:
+```
+git --work-tree=/var/www/<site-folder> --git-dir=/var/repo/<site-name> checkout -f
+```
+save and set the proper permissions using:
+```
+chmod +x post-receive
+```
+
+In you local repository add a new remote:
+```
+git remote add live ssh://user@mydomain.com/var/repo/<site-name>.git
+```
+```
+git push live master
+```
 
 ## Useful commands
 - `▶ sudo chown -R <owner>:<group> <folder>` Change the owner and/or group of each FILE to OWNER and/or GROUP.
