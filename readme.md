@@ -190,7 +190,7 @@ server {
 # reverse proxy
 server {
   listen 80;
-  server_name www.test.com test.com;
+  server_name www.project-name.axelfuhrmann.com project-name.axelfuhrmann.com; # subdomains
   location / {
     proxy_pass http://localhost:8080;
     proxy_http_version 1.1;
@@ -284,3 +284,4 @@ git push live master
 ## Useful links
 - [How To Set Up a Node.js Application for Production on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04)
 - [How To Set Up Automatic Deployment with Git with a VPS](https://www.digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps)
+- [How To Set Up a Host Name with DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-host-name-with-digitalocean)
