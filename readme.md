@@ -2,11 +2,28 @@
 [How To Set Up a Node.js Application for Production on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04
   )
 
-- `$` local
-- `▶` server
+## Table of Contents
+- [Access the server](#access-the-server)
+  - [Generate a Key Pair](#generate-a-key-pair)
+  - [Disable Password Authentication and Root login](#disable-password-authentication-and-root-login)
+  - [Set Up a Basic Firewall](#set-up-a-basic-firewall)
+- [Install Nginx](#install-nginx)
+  - [Adjust Firewall](#adjust-firewall)
+  - [Basic management commands](#basic-management-commands)
+  - [Important Nginx Files and Directories](#important-nginx-files-and-directories)
+  - [Add locations](#add-locations)
+- [Install Node.js](#install-node.js)
+  - [Node.js v9.x with NodeSource](#node.js-v9.x-with-nodeSource)
+  - [Install PM2](#Install-PM2)
+  - [PM2 Commands](#PM2-Commands)
+- [Useful commands](#Useful-commands)
 
-## Initial setup
-### Access the server
+
+I will use to indicate the local or server terminal:
+- `$`: local
+- `▶`: server
+
+## Access the server
 ```
 $ ssh root@<server-ip>
 ```
@@ -80,7 +97,7 @@ Now you can enter the server with
 $ ssh server-axel
 ```
 
-## Disable Password Authentication and Root login
+### Disable Password Authentication and Root login
 
 ```
 $ ssh server-axel
@@ -116,7 +133,7 @@ You can see that SSH connections are still allowed by typing:
 ▶ sudo ufw status
 ```
 
-## install Nginx
+## Install Nginx
 ```
 ▶ sudo apt-get update
 ▶ sudo apt-get install nginx
@@ -148,3 +165,93 @@ or just check it in Chrome with the `<server-ip>`
 - `/var/www/html`: The actual web content, which by default only consists of the default Nginx page you saw earlier, is served out of the /var/www/html directory. This can be changed by altering Nginx configuration files.
 - `/etc/nginx`: The nginx configuration directory. All of the Nginx configuration files reside here.
 - `/etc/nginx/sites-enabled/`: The directory where enabled per-site "server blocks" are stored. Typically, these are created by linking to configuration files found in the `sites-available` directory.
+
+### Add locations
+
+Open the file for editing:
+```
+▶ sudo vim /etc/nginx/sites-enabled/default
+```
+
+```bash
+server {
+  listen 80;
+  server_name www.axelfuhrmann.com axelfuhrmann.com;
+  location / {
+    root   /var/www/portfolio;
+    index  index.html;
+  }
+  error_page  404              /404.html;
+  location = /404.html {
+    root   /var/www/portfolio;
+  }
+}
+
+# reverse proxy
+server {
+  listen 80;
+  server_name www.test.com test.com;
+  location / {
+    proxy_pass http://localhost:8080;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+}
+```
+
+Make sure you didn't introduce any syntax errors by typing:
+```
+▶ sudo nginx -t
+```
+
+Next, restart Nginx:
+```
+▶ sudo systemctl restart nginx
+```
+
+## Instal Node.js
+### Node.js v9.x with [NodeSource](https://github.com/nodesource/distributions)
+
+```
+▶ curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+▶ sudo apt-get install -y nodejs
+▶ sudo apt-get install build-essential
+```
+
+### Install PM2
+PM2 is a process manager for Node.js applications
+```
+▶ sudo npm i -g pm2
+```
+
+The `startup` subcommand generates and configures a startup script to launch PM2 and its managed processes on server boots:
+```
+▶ pm2 startup systemd
+```
+### PM2 Commands
+- `▶ npm install pm2@latest -g ; pm2 update`
+
+**Process State Management:**
+- `▶ pm2 start app.js --name "api"`
+- `▶ pm2 restart api/all`
+- `▶ pm2 stop api/all`
+- `▶ pm2 delete api/all`
+- `▶ pm2 kill`
+
+**Process Monitoring:**
+- `▶ pm2 list`
+- `▶ pm2 monit`
+- `▶ pm2 show [app-name]`
+- `▶ pm2 logs`
+
+
+
+## Useful commands
+- `▶ sudo chown -R <owner>:<group> <folder>` Change the owner and/or group of each FILE to OWNER and/or GROUP.
+- `▶ sudo tail -f /var/log/nginx/access.log` view Nginx logs
+- `▶ sudo tail -f /var/log/nginx/error.log` view Nginx error logs
+- `▶ ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'` check ip
+- `▶ curl -4 icanhazip.com` check ip
