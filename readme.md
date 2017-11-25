@@ -19,7 +19,7 @@
 - [Useful commands](#useful-commands)
 
 
-I will use to indicate the local or server terminal:
+I will use `$` and `▶` to indicate the local or server terminal:
 - `$`: local
 - `▶`: server
 
