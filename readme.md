@@ -14,6 +14,13 @@
   - [Node.js v9.x with NodeSource](#nodejs-v9x-with-nodesource)
   - [Install PM2](#install-pm2)
   - [PM2 Commands](#pm2-commands)
+- [Install Fail2Ban](#install-fail2ban)
+  - [Changing Defaults](#changing-defaults)
+  - [Configuring Fail2Ban to Monitor Nginx Logs](#configuring-fail2ban-to-monitor-nginx-logs)
+  - [Adding the Filters for Additional Nginx Jails](#adding-the-filters-for-additional-nginx-jails)
+  - [Activating your Nginx Jails](#activating-your-nginx-jails)
+  - [Fail2Ban Commands](#fail2ban-commands)
+  - [Testing the Banning Policies](#testing-the-banning-policies)
 - [Automatic Deployment with Git](#automatic-deployment-with-git)
 - [Useful commands](#useful-commands)
 - [Useful links](#useful-links)
@@ -247,6 +254,176 @@ The `startup` subcommand generates and configures a startup script to launch PM2
 - `▶ pm2 show [app-name]`
 - `▶ pm2 logs`
 
+## Install Fail2Ban
+> Fail2Ban is an intrusion prevention software framework that protects computer servers from brute-force attacks.
+
+```
+▶ sudo apt-get update
+▶ sudo apt-get install fail2ban
+```
+
+### Changing Defaults
+
+We need to copy the `jail.conf` file with the contents commented out, as the basis for the our `jail.local` file. We can do this by typing:
+```
+▶ awk '{ printf "# "; print; }' /etc/fail2ban/jail.conf | sudo tee /etc/fail2ban/jail.local
+```
+```
+▶ sudo vim /etc/fail2ban/jail.local
+```
+Important default settings:
+```bash
+[DEFAULT]
+...
+# source addresses that fail2ban ignores
+ignoreip = 127.0.0.1/8
+
+# length of time that a client will be banned. 600 seconds = or 10 minutes.
+bantime = 600
+
+# The maxretry variable sets the number of tries a client has to authenticate within a window of time defined by findtime, before being banned.
+findtime = 600
+maxretry = 3
+```
+### Configuring Fail2Ban to Monitor Nginx Logs
+In the `jail.local` file there is a `JAILS` section. Each of these sections can be enabled by uncommenting the header and changing the `enabled` line to be `true`.
+
+To enable log monitoring for Nginx login attempts, we will enable the `[nginx-http-auth]` jail.
+
+```bash
+[nginx-http-auth]
+
+enabled = true
+port    = http,https
+filter  = nginx-http-auth
+logpath = %(nginx_error_log)s
+
+[nginx-botsearch]
+
+enabled  = true
+port     = http,https
+filter   = nginx-botsearch
+logpath  = %(nginx_error_log)s
+maxretry = 2
+```
+
+This is the only Nginx-specific jail included with Ubuntu's `fail2ban` package. However, we can create our own jails to add additional functionality.
+
+```bash
+[nginx-noscript]
+
+enabled  = true
+port     = http,https
+filter   = nginx-noscript
+logpath  = /var/log/nginx/access.log
+maxretry = 6
+
+[nginx-badbots]
+
+enabled  = true
+port     = http,https
+filter   = nginx-badbots
+logpath  = /var/log/nginx/access.log
+maxretry = 2
+
+[nginx-nohome]
+
+enabled  = true
+port     = http,https
+filter   = nginx-nohome
+logpath  = /var/log/nginx/access.log
+maxretry = 2
+
+[nginx-noproxy]
+
+enabled  = true
+port     = http,https
+filter   = nginx-noproxy
+logpath  = /var/log/nginx/access.log
+maxretry = 2
+```
+### Adding the Filters for Additional Nginx Jails
+We need to create the filter files for the jails we've created. These filter files will specify the patterns to look for within the Nginx logs.
+```
+▶ cd /etc/fail2ban/filter.d
+```
+We actually want to start by adjusting the pre-supplied Nginx authentication filter to match an additional failed login log pattern.
+```
+▶ sudo vim nginx-http-auth.conf
+```
+```js
+[Definition]
+
+
+failregex = ^ \[error\] \d+#\d+: \*\d+ user "\S+":? (password mismatch|was not found in ".*"), client: <HOST>, server: \S+, request: "\S+ \S+ HTTP/\d+\.\d+", host: "\S+"\s*$
+            ^ \[error\] \d+#\d+: \*\d+ no user/password was provided for basic authentication, client: <HOST>, server: \S+, request: "\S+ \S+ HTTP/\d+\.\d+", host: "\S+"\s*$
+
+ignoreregex =
+```
+Next, we'll create a filter for our `[nginx-noscript]` jail:
+```
+▶ sudo vim nginx-noscript.conf
+```
+```js
+[Definition]
+
+failregex = ^<HOST> -.*GET.*(\.php|\.asp|\.exe|\.pl|\.cgi|\.scgi)
+
+ignoreregex =
+```
+
+We create the filter for the `[nginx-noproxy]` jail:
+```
+▶ sudo vim nginx-noproxy.conf
+```
+```js
+[Definition]
+
+failregex = ^<HOST> -.*GET http.*
+
+ignoreregex =
+```
+
+And finally, we can copy the `apache-badbots.conf` file to use with Nginx.
+```bash
+▶ sudo cp apache-badbots.conf nginx-badbots.conf
+```
+
+To implement your configuration changes, you'll need to restart the fail2ban service. You can do that by typing:
+```
+▶ sudo service fail2ban restart
+```
+
+You can look at iptables to see that fail2ban has modified your firewall rules to create a framework for banning clients
+```
+▶ sudo iptables -S
+```
+
+### Fail2Ban commands
+
+- `▶ sudo fail2ban-client status` see the enable jails
+- `▶ sudo fail2ban-client status nginx-http-auth`: see the status of that particular jail
+
+### Testing the Banning Policies
+From another server, we can test the rules by getting our second server banned. After logging into your second server, try to SSH into the fail2ban server. You can try to connect using a non-existent name for instance:
+```bash
+# second sever
+▶ ssh blah@fail2ban_server_IP
+```
+Repeat this a few times. At some point, the fail2ban server will stop responding.
+
+On your fail2ban server, you can see the new rule by checking our iptables again:
+```
+▶ sudo iptables -S
+```
+```bash
+...
+-A INPUT -j DROP
+-A fail2ban-nginx-http-auth -j RETURN
+-A fail2ban-ssh -s 203.0.113.14/32 -j REJECT --reject-with icmp-port-unreachable # fail2ban Jail
+-A fail2ban-ssh -j RETURN
+```
+
 ## Automatic Deployment with Git
 
 ```bash
@@ -285,3 +462,4 @@ git push live master
 - [How To Set Up a Node.js Application for Production on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04)
 - [How To Set Up Automatic Deployment with Git with a VPS](https://www.digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps)
 - [How To Set Up a Host Name with DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-host-name-with-digitalocean)
+- [How To Protect SSH with Fail2Ban on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04)
