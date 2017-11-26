@@ -183,7 +183,7 @@ Open the file for editing:
 ```bash
 server {
   listen 80;
-  server_name www.axelfuhrmann.com axelfuhrmann.com;
+  server_name www.mysite.com mysite.com;
   location / {
     root   /var/www/portfolio;
     index  index.html;
@@ -197,7 +197,7 @@ server {
 # reverse proxy
 server {
   listen 80;
-  server_name www.project-name.axelfuhrmann.com project-name.axelfuhrmann.com; # subdomains
+  server_name www.test.mysite.com test.mysite.com; # subdomains
   location / {
     proxy_pass http://localhost:8080;
     proxy_http_version 1.1;
