@@ -21,7 +21,7 @@
   - [Activating your Nginx Jails](#activating-your-nginx-jails)
   - [Fail2Ban Commands](#fail2ban-commands)
   - [Testing the Banning Policies](#testing-the-banning-policies)
-- [Using Let’s Encrypt SSL/TLS Certificates](#using-lets-encrypt-SSL/TLS-certificates-with-NGINX)
+- [Using Let’s Encrypt SSL/TLS Certificates](#using-lets-encrypt-ssltls-certificates)
   - [Download the Let’s Encrypt Client](#download-the-lets-encrypt-client)
   - [Obtain the SSL certificate](#obtain-the-ssl-certificate)
   - [Automatic Renewal of Let’s Encrypt Certificates](#automatic-renewal-of-lets-encrypt-certificates)
