@@ -21,6 +21,10 @@
   - [Activating your Nginx Jails](#activating-your-nginx-jails)
   - [Fail2Ban Commands](#fail2ban-commands)
   - [Testing the Banning Policies](#testing-the-banning-policies)
+- [Using Let’s Encrypt SSL/TLS Certificates](#using-lets-encrypt-SSL/TLS-certificates-with-NGINX)
+  - [Download the Let’s Encrypt Client](#download-the-lets-encrypt-client)
+  - [Obtain the SSL certificate](#obtain-the-ssl-certificate)
+  - [Automatic Renewal of Let’s Encrypt Certificates](#automatic-renewal-of-lets-encrypt-certificates)
 - [Automatic Deployment with Git](#automatic-deployment-with-git)
 - [Useful commands](#useful-commands)
 - [Useful links](#useful-links)
@@ -154,7 +158,7 @@ Verify the change
 ▶ sudo ufw status
 ```
 
-To check if Ngnix is running type:
+To check if Nginx is running type:
 ```
 ▶ systemctl status nginx
 ```
@@ -424,6 +428,41 @@ On your fail2ban server, you can see the new rule by checking our iptables again
 -A fail2ban-ssh -j RETURN
 ```
 
+## Using Let’s Encrypt SSL/TLS Certificates
+Let’s Encrypt is a certificate authority (CA) offering free and automated SSL/TLS certificates. Certificates issued by Let’s Encrypt are trusted by most browsers in production today.
+
+### Download the Let’s Encrypt Client
+Install certbot
+```
+▶ add-apt-repository ppa:certbot/certbot
+▶ sudo apt-get update
+▶ sudo apt-get install python-certbot-nginx
+```
+### Obtain the SSL certificate
+Certbot has various plugins to generate SSL certificates. The NGINX Plugin will take care of re-configuring NGINX and reloading the configuration whenever necessary.
+
+To generate SSL certificates with the NGINX plugin, run the following command:
+```
+▶ sudo certbot --nginx -d example.com -d www.example.com
+```
+Once the process has completed successfully, certbot will prompt you to configure your HTTPS settings, which includes entering your email address and agreeing to the Let’s Encrypt terms of service.
+
+We need to make sure that the firewall allows HTTPS connections.
+```
+▶ sudo ufw allow 'Nginx HTTPS’
+```
+
+### Automatic Renewal of Let’s Encrypt Certificates
+Let’s Encrypt certificates expire in 90 days. We encourage you to automatically renew your certificates when they expire. We’ll set up a cron job to do this.
+```
+crontab -e
+```
+we enter the certbot command we wish to run daily. In this blog post, we run the command every day at noon. The command will check to see if the certificate on the server will expire within the next 30 days, and renew it if so.
+
+```bash
+0 12 * * * /usr/bin/certbot renew --quiet
+```
+
 ## Automatic Deployment with Git
 
 ```bash
@@ -463,3 +502,4 @@ git push live master
 - [How To Set Up Automatic Deployment with Git with a VPS](https://www.digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps)
 - [How To Set Up a Host Name with DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-host-name-with-digitalocean)
 - [How To Protect SSH with Fail2Ban on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04)
+- [Using Free Let’s Encrypt SSL/TLS Certificates with NGINX](https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/)
