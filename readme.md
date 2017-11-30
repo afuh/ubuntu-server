@@ -178,6 +178,7 @@ or just check it in Chrome with the `<server-ip>`
 - `/etc/nginx/sites-enabled/`: The directory where enabled per-site "server blocks" are stored. Typically, these are created by linking to configuration files found in the `sites-available` directory.
 
 ### Add locations
+*Follow [this guide](#https://www.digitalocean.com/community/tutorials/how-to-set-up-a-host-name-with-digitalocean) if you don't know how to set up your host name*
 
 Open the file for editing:
 ```
