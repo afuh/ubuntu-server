@@ -244,7 +244,7 @@ The `startup` subcommand generates and configures a startup script to launch PM2
 ▶ pm2 startup systemd
 ```
 ### PM2 Commands
-- `▶ npm install pm2@latest -g ; pm2 update`
+- `▶ sudo npm install pm2@latest -g ; pm2 update`
 
 **Process State Management:**
 - `▶ pm2 start app.js --name "api"`
@@ -373,6 +373,18 @@ Next, we'll create a filter for our `[nginx-noscript]` jail:
 [Definition]
 
 failregex = ^<HOST> -.*GET.*(\.php|\.asp|\.exe|\.pl|\.cgi|\.scgi)
+
+ignoreregex =
+```
+
+Next, create a filter for the `[nginx-nohome]` jail:
+```
+▶ sudo vim nginx-nohome.conf
+```
+```js
+[Definition]
+
+failregex = ^<HOST> -.*GET .*/~.*
 
 ignoreregex =
 ```
