@@ -470,7 +470,7 @@ Let’s Encrypt certificates expire in 90 days. We encourage you to automaticall
 ```
 crontab -e
 ```
-we enter the certbot command we wish to run daily. In this blog post, we run the command every day at noon. The command will check to see if the certificate on the server will expire within the next 30 days, and renew it if so.
+we enter the certbot command we wish to run daily. The command will check to see if the certificate on the server will expire within the next 30 days, and renew it if so.
 
 ```bash
 0 12 * * * /usr/bin/certbot renew --quiet
