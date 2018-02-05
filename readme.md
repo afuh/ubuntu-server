@@ -425,7 +425,7 @@ You can look at iptables to see that fail2ban has modified your firewall rules t
 From another server, we can test the rules by getting our second server banned. After logging into your second server, try to SSH into the fail2ban server. You can try to connect using a non-existent name for instance:
 ```bash
 # second sever
-▶ ssh blah@second_server_ip
+▶ ssh blah@fail2ban_server_ip
 ```
 Repeat this a few times. At some point, the fail2ban server will stop responding.
 
