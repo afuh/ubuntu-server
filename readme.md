@@ -462,7 +462,7 @@ Once the process has completed successfully, certbot will prompt you to configur
 
 We need to make sure that the firewall allows HTTPS connections.
 ```
-▶ sudo ufw allow 'Nginx HTTPS’
+▶ sudo ufw allow 'Nginx HTTPS'
 ```
 
 ### Automatic Renewal of Let’s Encrypt Certificates
