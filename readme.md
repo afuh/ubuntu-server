@@ -5,6 +5,10 @@
   - [Generate a Key Pair](#generate-a-key-pair)
   - [Disable Password Authentication and Root login](#disable-password-authentication-and-root-login)
   - [Set Up a Basic Firewall](#set-up-a-basic-firewall)
+- [Install Oh My Zsh](#install-oh-my-zsh)
+  - [Install ZSH](#install-zsh)
+  - [Set up Oh My Zsh](#set-up-oh-my-zsh)
+  - [Add Syntax Highlighting](#add-syntax-highlighting)
 - [Install Nginx](#install-nginx)
   - [Adjust Firewall](#adjust-firewall)
   - [Basic management commands](#basic-management-commands)
@@ -143,6 +147,77 @@ You can see that SSH connections are still allowed by typing:
 ```
 ▶ sudo ufw status
 ```
+
+## Install Oh My Zsh
+Oh-My-Zsh is a framework for [Zsh](http://www.zsh.org/), the Z shell. In order for Oh-My-Zsh to work, Zsh must be installed.
+
+### Install ZSH
+
+```
+▶ sudo apt-get install zsh
+```
+Verify installation by running `zsh --version`. Expected result: `zsh 4.3.9` or more recent.
+
+Make it your default shell.
+```
+▶ chsh -s $(which zsh)
+```
+
+`exit` the server and log-in again. You are going to see the Z Shell configuration, choose the option `(2)`.
+
+You can test that it worked with
+
+```
+▶ echo $SHELL
+```
+
+Expected result: `/bin/zsh` or similar.
+
+### Set up Oh My Zsh
+Oh My Zsh is installed via `curl` running the following command.
+```
+▶ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+```
+After it finish you are going to see you new terminal style. You can start styling your terminal by editing the file
+```
+▶ sudo vim ~/.zshrc
+```
+For more information about all the things you could do with Oh My Zsh check https://github.com/robbyrussell/oh-my-zsh
+
+Example:
+```bash
+# ~/.zshrc file
+
+ZSH_THEME="avit"                #change your theme.
+plugins=(git npm)               #use different plugins.
+alias zsho="sudo vim ~/.zshrc"  #write your own aliases.
+```
+
+Every time you change the `~/.zshrc` file you need reload your zsh settings:
+```
+▶ source ~/.zshrc
+```
+
+### Add Syntax Highlighting
+This package provides syntax highlighing for the shell zsh
+
+Install it in the oh-my-zsh's plugins directory:
+```
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+```
+Add it to your plugin list
+```bash
+▶ sudo vim ~/.zshrc
+
+# scroll to plugins
+▶ plugins=( git npm zsh-syntax-highlighting)
+```
+Source `~/.zshrc` to take changes into account
+```
+▶ source ~/.zshrc
+```
+
+
 
 ## Install Nginx
 ```
