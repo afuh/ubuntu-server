@@ -500,7 +500,7 @@ You can look at iptables to see that fail2ban has modified your firewall rules t
 From another server, we can test the rules by getting our second server banned. After logging into your second server, try to SSH into the fail2ban server. You can try to connect using a non-existent name for instance:
 ```bash
 # second sever
-▶ ssh blah@fail2ban_server_IP
+▶ ssh blah@fail2ban_server_ip
 ```
 Repeat this a few times. At some point, the fail2ban server will stop responding.
 
@@ -510,10 +510,7 @@ On your fail2ban server, you can see the new rule by checking our iptables again
 ```
 ```bash
 ...
--A INPUT -j DROP
--A fail2ban-nginx-http-auth -j RETURN
--A fail2ban-ssh -s 203.0.113.14/32 -j REJECT --reject-with icmp-port-unreachable # fail2ban Jail
--A fail2ban-ssh -j RETURN
+-A f2b-sshd -s second_server_ip -j REJECT --reject-with icmp-port-unreachable
 ```
 
 ## Using Let’s Encrypt SSL/TLS Certificates
@@ -537,7 +534,7 @@ Once the process has completed successfully, certbot will prompt you to configur
 
 We need to make sure that the firewall allows HTTPS connections.
 ```
-▶ sudo ufw allow 'Nginx HTTPS’
+▶ sudo ufw allow 'Nginx HTTPS'
 ```
 
 ### Automatic Renewal of Let’s Encrypt Certificates
@@ -545,7 +542,7 @@ Let’s Encrypt certificates expire in 90 days. We encourage you to automaticall
 ```
 crontab -e
 ```
-we enter the certbot command we wish to run daily. In this blog post, we run the command every day at noon. The command will check to see if the certificate on the server will expire within the next 30 days, and renew it if so.
+we enter the certbot command we wish to run daily. The command will check to see if the certificate on the server will expire within the next 30 days, and renew it if so.
 
 ```bash
 0 12 * * * /usr/bin/certbot renew --quiet
