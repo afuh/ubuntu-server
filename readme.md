@@ -203,7 +203,7 @@ This package provides syntax highlighing for the shell zsh
 
 Install it in the oh-my-zsh's plugins directory:
 ```
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+▶ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 ```
 Add it to your plugin list
 ```bash
