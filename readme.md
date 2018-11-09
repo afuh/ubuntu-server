@@ -15,7 +15,7 @@
   - [Important Nginx Files and Directories](#important-nginx-files-and-directories)
   - [Add locations](#add-locations)
 - [Install Node.js](#instal-nodejs)
-  - [Node.js v9.x with NodeSource](#nodejs-v9x-with-nodesource)
+  - [Node.js with NodeSource](#nodejs-with-nodesource)
   - [Install PM2](#install-pm2)
   - [PM2 Commands](#pm2-commands)
 - [Install Fail2Ban](#install-fail2ban)
