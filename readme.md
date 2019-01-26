@@ -518,10 +518,14 @@ Let’s Encrypt is a certificate authority (CA) offering free and automated SSL/
 
 ### Download the Let’s Encrypt Client
 Install certbot
+[check here](https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx)
 ```
-▶ add-apt-repository ppa:certbot/certbot
 ▶ sudo apt-get update
-▶ sudo apt-get install python-certbot-nginx
+▶ sudo apt-get install software-properties-common
+▶ sudo add-apt-repository universe
+▶ sudo add-apt-repository ppa:certbot/certbot
+▶ sudo apt-get update
+▶ sudo apt-get install python-certbot-nginx 
 ```
 ### Obtain the SSL certificate
 Certbot has various plugins to generate SSL certificates. The NGINX Plugin will take care of re-configuring NGINX and reloading the configuration whenever necessary.
